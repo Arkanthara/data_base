@@ -1,0 +1,232 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[français]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{TP1 Base de données}
+\author{Michel Donnet}
+
+\begin{document}
+\maketitle
+
+\section{Exercice}
+
+\begin{enumerate}
+
+\item Flotte d'une compagnie de taxis :
+
+Dans cette table, on peut remarquer qu'il y a des données redondantes... En effet, on peut remarquer que si on prend un taxi de modèle Prius, on aura toujours le même carburant, la même boîte de vitesses, le même poids, et le même nombre de passagers. En effet, si on prend 2 voitures de même modèle, elles auront les mêmes caractéristiques, comme par exemple le poids, le nombre de passagers, le carburant, la boîte à vitesse (cependant, il pourrait éventuellement y avoir des variantes comme un modèle qui peut avoir une boîte à vitesse automatique ou manuelle...)
+
+\item Les cantons suisses :
+
+Dans cette table, on peut remarquer qu'il y a effectivement des données redondantes... En effet, pour un canton donné, son chef lieu et sa date d'entrée dans la confédération ne changent pas, même s'il y a plusieurs langues parlées dans ce canton. Donc les données du chef lieu et de la date d'entrée dans la confédération sont redondantes par exemple pour la deuxième fois où Fribourg apparaît dans le tableau...
+
+\item Vente d'oeuvres d'art :
+
+Dans cette table, il n'y a pas de redondances... En effet, chaque information peut changer d'une vente à l'autre, et chaque oeuvre est supposée unique.
+\end{enumerate}
+\section{Exercice}
+
+\begin{enumerate}
+    \item Pour ce tableau, je proposerai pour éliminer la redondance des données de faire plusieurs tableaux. Le premier tableau contiendrait le numéro de plaque, la date de mise en service, le modèle, et le numéro de station, et le deuxième tableau contiendrait le modèle, le nombre de passagers, le carburant, la boîte de vitesses et le poids.
+Le lien ou la contrainte de référence entre ces 2 tableaux est évidement le modèle.
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+\hline
+Numéro de plaque & mise en service & modèle & numéro de station \\
+\hline
+\hline
+GE 121 & 11.12.16 & Prius & 1 \\
+\hline
+GE 122 & 24.01.18 & Tesla S & 1 \\
+\hline
+GE 123 & 26.06.17 & Prius & 1 \\
+\hline
+GE 124 & 12.03.14 & Vito D & 0 \\
+\hline
+GE 125 & 03.05.16 & Prius & 0 \\
+\hline
+\end{tabular}
+    \caption{Flotte de taxis}
+    \label{tab:my_label}
+\end{table}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+\hline
+modèle & nombre de passagers & carburant & boîte à vitesse & poids \\
+\hline
+\hline
+Prius & 5 & hybride & A & 1225 \\
+\hline
+Tesla S & 5 & électricité & A & 2100 \\
+\hline
+Vito D & 7 & diesel & M & 2075 \\
+\hline
+\end{tabular}
+    \caption{Modèle}
+    \label{tab:my_label}
+\end{table}
+
+\newpage
+    \item Pour ce tableau, il y a des données redondantes à éliminer, comme nous l'avons vu précédement. Je proposerai donc la solution suivante, avec comme contrainte de référence le canton. 
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        canton & langue \\
+        \hline
+        \hline
+        Genève & français \\
+        \hline
+        Fribourg & français \\
+        \hline
+        Frigourg & allemand \\
+        \hline
+        Zurich & allemand \\
+        \hline
+        Berne & français \\
+        \hline
+        Berne & allemand \\
+        \hline
+    \end{tabular}
+    \caption{Langues parlées dans les Cantons Suisses suivant}
+    \label{tab:my_label}
+\end{table}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        canton & chef lieu & date entrée confédération \\
+        \hline
+        \hline
+        Genève & Genève & 1815 \\
+        \hline
+        Fribourg & Fribourg & 1481 \\
+        \hline
+        Zürich & Zürich & 1351 \\
+        \hline
+        Berne & Berne & 1353 \\
+        \hline
+        
+    \end{tabular}
+    \caption{Informations sur les Cantons}
+    \label{tab:my_label}
+\end{table}
+
+\item Pour ce tableau, il n'y a pas de redondances à éliminer.
+
+\end{enumerate}
+
+\section{Exercice}
+
+
+\begin{enumerate}
+\item le numéro d'immatriculation d'un étudiant identifie un étudiant, donc c'est une clé d'accès unique. En effet, on peut trouver un étudiant et toutes les informations le concernant en utilisant son numéro d'immatriculation.
+
+\item Une plaque minéralogique identifie un véhicule (en effet, sinon on n'aurait pas d'ammende lorsqu'on se fait flasher...). C'est donc une clé d'accès unique dans un contexte de fichier de véhicules utilisé par le sercive des automobiles.
+
+\item Un numéro ISBN identifie un livre car on peut trouver ce livre grâce à ce numéro (Attention, lorsqu'un livre est édité à plusieurs exemplaires, le numéro ISBN ne changera pas d'un livre à l'autre !)
+
+\item Un numéro de TP n'identifie pas un TP, car il y a des TP de plusieurs matières différentes qui ont le même numéro de tp.
+
+\item Les informations qui permettraient d'identifier une personne physique en Suisse seraient par exemple le nom complet (Nom, Prénom...) et la date de naissance.
+
+\end{enumerate}
+
+\section{Exercice}
+
+
+Le numéro d'immatriculation est unique et peut être utilisé comme clé d'accès (cf exercice 3 a)) et également {nom, prénom, date de naissance} est unique. En effet, on peut trouver plusieurs personnes qui ont le même nom et le même prénom, mais trouver 2 personnes qui ont le même nom, le même prénom et la même date de naissance est à la limite pas possible (Sauf si ce sont des jumeaux ayant le même nom...). Et trouver 2 personnes qui ont le même nom (par exemple des frères) ou 2 personnes dans la même faculté est facile.
+
+\section{Exercice}
+
+Voici mes propositions pour remplir les entêtes des tableaux.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+Numéro de produit & Transporteur & Firme envoyant le produit & date départ & heure départ & nombre d'exempaires \\
+        \hline
+        \hline
+ZK567 & GVA & ZRH & 2.2.2019 & 0 :35 & 106 \\
+\hline
+KL1122 & AMS & CDG & 2.2.2019 & 0 :50 & 77 \\
+\hline
+KL232 & AMS & JFK & 3.2.2019 & 8 :10 & 230 \\
+\hline
+LX441 & GVA & NCE & 3.2.2019 & 0 :48 & 101 \\
+\hline
+    \end{tabular}
+    \caption{Tableau 4}
+    \label{tab:my_label}
+\end{table}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+\hline
+Salle & Numéro de l'expérience & produit 1 & produit 2 \\
+\hline
+\hline
+A30 & 1 & Cf3 & Cf6 \\
+\hline
+A30 & 2 & c4 & b6 \\
+\hline
+A30 & 3 & Cc3 & Fb7 \\
+\hline
+A30 & 4 & d3 & c5 \\
+\hline
+D29 & 1 & d4 & Cf6 \\
+\hline
+D29 & 2 & c4 & e6 \\
+\hline
+D29 & 3 & Cf3 & d5 \\
+\hline
+D29 & 4 & Cc3 & dxc4 \\
+\hline
+    \end{tabular}
+    \caption{Tableau 5}
+    \label{tab:my_label}
+\end{table}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Classement & date du match & Sponsoriseur & équipe 1 & équipe 2 & Résultat & Tir aux buts \\
+\hline
+\hline
+1 & 12.06.21 & PG & Pays de Galles & Bakou & 1-1 & \\
+\hline
+2 & 16.06.21 & PG & Italie & Rome & 0-3 & \\
+\hline
+3 & 20.06.21 & PG & Turquie & Bakou & 3-0 & \\
+\hline
+4 & 28.06.21 & HF & France & Bucarest & 3-3 (5-4) & TB \\
+\hline
+5 & 02.07.21 & QF & Espagne & St-Pétersbourg & 1-1 (1-3) & TB \\
+\hline
+    \end{tabular}
+    \caption{Tableau 6}
+    \label{tab:my_label}
+\end{table}
+
+
+\end{document}

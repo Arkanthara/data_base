@@ -44,5 +44,6 @@ Voici la solution que je propose:
 $$\pi_{réalisateur}(Film)\bowtie_{réalisateur \ne réalisateur} \pi_{réalisateur}(Reaclist)$$
 
 \subsection{Les films dont au moins un des acteurs était âgé de 60 ans ou plus}
-$$\pi_{titre}(Casting \bowtie_{(année - date \: naissance \: \geq 60) \wedge (nom \: = \:nom \: acteur) } Acteur)$$
+$$\pi_{titre}(Casting \bowtie_{(année - date \: naissance \: \geq 60)} Acteur)$$
 \end{document}
+

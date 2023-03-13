@@ -12,11 +12,11 @@
 Exprimez à l'aide d'expressions algébriques les requêtes suivantes:
 \subsection{La liste des films français (titre, année, nom réalisateur, durée)}
 Voici la formule que je propose:
-$$\pi_{titre, \:année, \:nom \:réalisateur, \:durée}(\sigma_{(pays = France)}(Film))$$
+$$\pi_{titre, \:\text{année}, \:nom \:\text{réalisateur}, \:\text{durée}}(\sigma_{(pays = France)}(Film))$$
 
 \subsection{Les années de sortie des films réalisés par "Christopher Nolan"}
 Voici la formule que je propose:
-$$\sigma_{(nom \:réalisateur = Christopher \:Nolan)}(\pi_{année}(Film))$$
+$$\pi_{année}(\sigma_{(nom \:réalisateur = Christopher \:Nolan)}((Film)))$$
 
 \subsection{Les acteurs qui ont tournés avec "Christopher Nolan"}
 Voici la solution que je propose:

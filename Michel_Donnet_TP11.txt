@@ -1,0 +1,43 @@
+TP11
+
+
+Q1. Quelle est la date d'entrée de Genève dans la Confédération ?
+
+SELECT DATE_ENTREE FROM CANTON WHERE NOM_C = 'Genève';
+
+Q2. Quelle est la liste des chefs-lieux de Suisse ?
+
+SELECT CHEF_LIEU FROM CANTON;
+
+Q3. Quels sont les cantons entrés dans la Confédération entre 1800 et 1900 ?
+
+SELECT NOM_C FROM CANTON WHERE DATE_ENTREE <= 1900 AND DATE_ENTREE >= 1800;
+
+Q4. Quelles sont les langues parlées en Suisse ?
+
+select distinct LANGUE_PARLEE from LANGUE;
+
+Q5. Quelle est la liste des langues parlées dans les différents cantons ?
+
+select * from LANGUE;
+
+Q6. Quels sont les cantons où l'on parle français ?
+
+select NOM_CANTON from LANGUE where LANGUE_PARLEE = 'français';
+
+Q7. Quels sont les cantons romands entrés dans la confédération depuis 1800 ?
+
+select NOM_CANTON
+from LANGUE, CANTON
+where CANTON.NOM_C = LANGUE.NOM_CANTON
+  and LANGUE.LANGUE_PARLEE = 'français'
+  and CANTON.DATE_ENTREE >= 1800;
+
+Q8. Quelle est la liste des cantons où l'on parle exclusivement allemand ?
+
+select NOM_C
+from CANTON
+where not exists(select NOM_CANTON
+                 from LANGUE
+                 where LANGUE.LANGUE_PARLEE!= 'allemand'
+                   and LANGUE.NOM_CANTON = CANTON.NOM_C);

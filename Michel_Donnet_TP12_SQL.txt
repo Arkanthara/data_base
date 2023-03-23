@@ -1,0 +1,66 @@
+
+
+
+Écrivez les requêtes correspondant aux énoncés suivants et vérifiez-les sous Access :
+
+Q1. Nom, prénom, adresse et numéro de téléphone des violonistes.
+
+select nom_p, prenom_p, adresse, num_tel
+from personnes
+where profession = 'violoniste';
+
+Q2. Nom, prénom et salaire des employées qui sont directrices ou directeurs.
+
+select nom_p, prenom_p, salaire
+from employe, personnes
+where employe.role = 'directeur'
+    and employe.num_p = personnes.numero;
+
+Q3. Liste des emprunteurs (nom, prénom et adresse) qui interviennent comme garant ou comme
+employé responsable de leur propre emprunt.
+
+select nom_p, prenom_p, adresse
+from emprunt, personnes
+where (emprunt.num_client = emprunt.num_resp
+    or emprunt.num_client = emprunt.num_garant)
+    and emprunt.num_client = personnes.numero;
+
+Q4. Nom, prénom et numéro de client (num_client) des informaticiens ayant contracté un emprunt.
+
+select nom_p, prenom_p, num_client
+from personnes, emprunt
+where emprunt.num_client = personnes.numero
+    and personnes.profession = 'informaticien';
+
+Q5. Liste des clients (nom, prénom et adresse) de l'agence qui se trouve à Renens.
+
+select nom_p, prenom_p, personnes.adresse
+from agence, compte, personnes
+where agence.adresse = 'Renens'
+    and compte.num_a = agence.num_a
+    and compte.num_client = personnes.numero;
+
+Q6. Liste des clients qui ont fait un emprunt. Pour chaque client qui a fait un emprunt, afficher :
+le nom et le prénom du client, le montant de l’emprunt, le nom et le prénom de l’employé qui
+a accordé le prêt
+
+create view personnes_emprunt as
+    select nom_p, prenom_p, montant, num_resp
+    from emprunt, personnes
+    where emprunt.num_client = personnes.numero;
+
+create view responsables_emprunt as
+    select nom_p, prenom_p, num_resp
+    from emprunt, personnes
+    where emprunt.num_resp = personnes.numero;
+
+select distinct personnes_emprunt.nom_p as 'Nom_Client', personnes_emprunt.prenom_p as 'Prenom_Client', personnes_emprunt.montant as 'Montant_emprunt', responsables_emprunt.nom_p as 'Nom_employé_ayant_acordé_prêt', responsables_emprunt.prenom_p as 'Prenom_employé_ayant_acordé_prêt'
+    from personnes_emprunt, responsables_emprunt
+    where personnes_emprunt.num_resp = responsables_emprunt.num_resp;
+
+Q7. Liste des employés (nom, prénom et nom de l'agence) ayant accepté des crédits pour lesquels
+le garant a un compte dont le solde est inférieur à la mensualité.
+
+Q8. Liste des personnes qui ont fait un emprunt dans une agence où ils ne possèdent pas de
+compte. Afficher le nom, prénom, le numéro de l’agence (num_a) où la personne a son
+compte et le numéro de l’agence (num_a) où la personne a fait l’emprunt.

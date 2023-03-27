@@ -61,6 +61,29 @@ select distinct personnes_emprunt.nom_p as 'Nom_Client', personnes_emprunt.preno
 Q7. Liste des employés (nom, prénom et nom de l'agence) ayant accepté des crédits pour lesquels
 le garant a un compte dont le solde est inférieur à la mensualité.
 
+select distinct personnes.nom_p, personnes.prenom_p, agence.nom_a
+from emprunt, compte, personnes, agence
+where emprunt.num_garant = compte.num_client
+    and compte.solde < emprunt.mensualite
+    and emprunt.num_resp = personnes.numero
+    and agence.num_a = emprunt.num_a;
+
 Q8. Liste des personnes qui ont fait un emprunt dans une agence où ils ne possèdent pas de
 compte. Afficher le nom, prénom, le numéro de l’agence (num_a) où la personne a son
 compte et le numéro de l’agence (num_a) où la personne a fait l’emprunt.
+
+create view client_compte_agence as
+    select compte.num_client, compte.num_a, personnes.prenom_p, personnes.nom_p
+    from emprunt, compte, personnes
+    where emprunt.num_client = compte.num_client
+        and personnes.numero = emprunt.num_client
+        and emprunt.num_a != compte.num_a;
+create view client_agence_emprunt as
+    select compte.num_client, emprunt.num_a
+    from emprunt, compte
+    where emprunt.num_client = compte.num_client
+      and emprunt.num_a != compte.num_a;
+select distinct prenom_p, nom_p, client_compte_agence.num_a as agence_client_compte, client_agence_emprunt.num_a as agence_emprunt
+from client_agence_emprunt, client_compte_agence
+where client_agence_emprunt.num_client = client_compte_agence.num_client
+    and client_compte_agence.num_a != client_agence_emprunt.num_a;

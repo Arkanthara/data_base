@@ -72,18 +72,11 @@ Q8. Liste des personnes qui ont fait un emprunt dans une agence où ils ne poss�
 compte. Afficher le nom, prénom, le numéro de l’agence (num_a) où la personne a son
 compte et le numéro de l’agence (num_a) où la personne a fait l’emprunt.
 
-create view client_compte_agence as
-    select compte.num_client, compte.num_a, personnes.prenom_p, personnes.nom_p
-    from emprunt, compte, personnes
-    where emprunt.num_client = compte.num_client
-        and personnes.numero = emprunt.num_client
-        and emprunt.num_a != compte.num_a;
 create view client_agence_emprunt as
-    select compte.num_client, emprunt.num_a
-    from emprunt, compte
-    where emprunt.num_client = compte.num_client
-      and emprunt.num_a != compte.num_a;
-select distinct prenom_p, nom_p, client_compte_agence.num_a as agence_client_compte, client_agence_emprunt.num_a as agence_emprunt
-from client_agence_emprunt, client_compte_agence
-where client_agence_emprunt.num_client = client_compte_agence.num_client
-    and client_compte_agence.num_a != client_agence_emprunt.num_a;
+    select * from emprunt where not exists(
+        select * from compte where compte.num_a = emprunt.num_a and compte.num_client = emprunt.num_client);
+
+select distinct personnes.nom_p, personnes.prenom_p, compte.num_a as agence_client_compte, client_agence_emprunt.num_a as agence_emprunt
+from client_agence_emprunt, personnes, compte
+where client_agence_emprunt.num_client = personnes.numero
+  and personnes.numero = compte.num_client;

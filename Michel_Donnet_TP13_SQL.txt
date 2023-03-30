@@ -1,0 +1,49 @@
+# TP13
+
+Écrivez les requêtes permettant de répondre aux questions suivantes et vérifiez-les sur Access ou sur
+MySQL :
+
+1. Quels sont les articles dont le titre contient à la fois le mot “ordinateur” et le mot “pense” ?
+Indication : utilisez l’opérateur de comparaison “LIKE”
+
+select *
+from article
+where titre like '%ordinateur%' and titre like '%pense%';
+
+2. Quels sont les auteurs d’article dont le prénom contient exactement 3 lettres ?
+Indication : utilisez l’opérateur de comparaison “LIKE” et le caractère générique ? (point d’interrogation) qui
+matche exactement un caractère. EN MySQL, utiliser le _ (caractère de soulignement) à la place du ?
+
+select nom
+from auteur
+where nom like '___ %';
+
+3. Pour chaque réservation, afficher le numéro de la chambre, le nom et le prénom du client, les
+dates de la réservation et la durée du séjour en nombre de nuits. Trier les réservations par
+ordre décroissant de la durée du séjour.
+
+select clients.nom, clients.prenom, reservations.num_chambre, reservations.date_arr, reservations.date_dep, reservations.date_dep - reservations.date_arr as nombre_nuits
+from reservations, clients
+where reservations.num_client = clients.num_client
+order by reservations.date_dep - reservations.date_arr desc;
+
+4. Quelle est la densité de population de chaque pays ? Afficher les noms des pays, leurs
+populations et leurs densités (population au kilomètre carré), triés par ordre croissant de
+densité de population.
+
+select nom, population, pays.population/pays.surface as densité_population
+from pays
+order by densité_population;
+
+5. Quelle est la densité de population maximale ?
+Indication : utilisez la fonction d’agrégation “MAX”
+
+select max(pays.population/pays.surface) as max_densité_population
+from pays;
+
+6. Afficher le pays (nom du pays, population, densité) qui a la plus grande densité de population.
+Indication : utilisez la requête de la question Q5 comme sous-requête
+
+select pays.nom, pays.population, pays.population/pays.surface as densité_population
+from pays
+where (select max(pays.population/pays.surface) as densité_population from pays) = (pays.population/pays.surface);

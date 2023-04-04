@@ -1,4 +1,4 @@
-# TP13
+# TP13 SQL
 
 Écrivez les requêtes permettant de répondre aux questions suivantes et vérifiez-les sur Access ou sur
 MySQL :

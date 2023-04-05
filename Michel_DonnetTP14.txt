@@ -1,0 +1,70 @@
+# TP14
+
+### Fait en MySQL dans DataGrip
+
+1. Quel est le prix total de chaque réservation de cabine ? Affichez tous les attributs de la table
+réservation, la durée de la réservation en nombre de semaines ainsi que le prix total de la réservation.
+Indication: pour le prix total, calculez le nombre de semaines puis multipliez ce nombre par le prix_semaine.
+
+select reservation.*,
+       datediff(reservation.fin_res, reservation.debut_res)/7 as duree,
+       datediff(reservation.fin_res, reservation.debut_res)/7 * cabine.prix_semaine as prix_total
+from cabine, reservation
+where cabine.num_cabine = reservation.num_cabine;
+
+2. Quels sont les cantons où l’on parle exactement deux langues (officielles) ?
+Indication : effectuez un regroupement par “nom_canton” puis utilisez la clause “HAVING”
+
+select nom_canton
+from langue
+group by nom_canton
+having count(nom_canton) = 2;
+
+3. Quels sont les voisins du canton de Saint-Gall (par voisins on entend cantons ET pays voisins) ?
+Indication: faire une requête pour les cantons voisins de Saint-Gall et une requête pour les pays voisins de Saint-Gall
+puis concaténer les deux requêtes avec l’opérateur ensembliste UNION. Attention, la table canton_voisin n’est pas
+symétrique : elle contient p. ex. le tuple (Genève, Vaud) mais pas (Vaud, Genève), or Vaud a pour voisin Genève.
+
+(select pays_voisin.pays_voisin
+from pays_voisin
+where pays_voisin.canton = 'Saint-Gall')
+union
+(select canton
+from canton_voisin
+where canton_voisin.voisin = 'Saint-Gall')
+union
+(select voisin
+from canton_voisin
+where canton_voisin.canton = 'Saint-Gall');
+
+4. Combien de cantons voisins a chaque canton ? Pour chaque canton, afficher le nom du canton et le
+nombre de cantons voisins.
+Indication: commencez par définir une vue des cantons voisins symétrique, c-à-dire qui contient par exemple à la fois le
+tuple (Genève, Vaud) et le tuple (Vaud, Genève). Ensuite effectuez un regroupement par “canton” sur cette vue et
+compter le nombre de cantons voisins avec la fonction d’agrégation adéquate.
+
+create view canton_double as
+    (select * from canton_voisin)union(select canton_voisin.voisin as canton, canton_voisin.canton as voisin from canton_voisin);
+select canton_double.canton, count(*) as nombre_voisins
+from canton_double
+group by canton_double.canton;
+
+5. Quel est le canton (quels sont les cantons) qui a (ont) exactement un canton voisin ?
+Indication : commencez par faire une vue avec la requête Q4, la requête Q5 devient alors triviale à écrire.
+
+create view canton_nombre_voisin as
+    select canton_double.canton, count(*) as nombre_voisins
+    from canton_double
+    group by canton_double.canton;
+
+select canton_nombre_voisin.canton
+from canton_nombre_voisin
+where canton_nombre_voisin.nombre_voisins = 1;
+
+6. Quel est le canton (quels sont les cantons) qui a (ont) le plus de cantons voisins ?
+Indication utilisez à nouveau la vue Q4 puis inspirez-vous du corrigé de “Exercice SQL sur les fonctions
+d’agrégation” que vous trouverez sur Moodle.
+
+select canton
+from canton_nombre_voisin
+where canton_nombre_voisin.nombre_voisins = (select max(nombre_voisins) from canton_nombre_voisin);

@@ -1,0 +1,141 @@
+Fait avec MySQL sur DataGrip
+
+1. Combien d’athlètes ont couru cette course ?
+
+select count(*) from RESULTATS;
+
+2. Quels sont les athlètes qui ont couru pour l’équipe de l’Université de Genève ?
+
+select NOM, PRENOM, EQUIPE
+from RESULTATS
+where EQUIPE like 'Université de Genève';
+
+3. Écrire une vue contextuelle qui fait la jointure des relations « resultats » et « categories » et
+calcule l’âge des athlètes en 2021. Le schéma de cette vue est constitué des attributs des deux
+relations + l’âge.
+
+create view athlètes as
+select DOSSARD, RANG, NOM, PRENOM, AN_NAISSANCE, LIEU_PAYS, EQUIPE, TEMPS, RETARD, MOYENNE, 2021 - RESULTATS.AN_NAISSANCE as AGE, CATEGORIES.CATEGORIE, SEXE, ANNEES_NAISSANCE, KM, NB_BOUCLES
+from RESULTATS, CATEGORIES
+where RESULTATS.CATEGORIE = CATEGORIES.CATEGORIE;
+
+4. Quelle est la personne la plus âgée ayant participé à la course ? Comme on ne connaît que
+l’année de naissance (et pas la date de naissance complète), la réponse peut contenir plusieurs
+personnes. Pour chaque personne, afficher le nom, le prénom, l’année de naissance et l’âge de la
+personne, le temps, la catégorie et la longueur du parcours ?
+
+select NOM, PRENOM, AN_NAISSANCE, AGE, TEMPS, CATEGORIE, KM
+from athlètes
+where AGE = (select max(AGE) from athlètes);
+
+5. Même question, mais pour les athlètes femmes uniquement ?
+
+create view athlètes_féminins as
+select *
+from athlètes
+where SEXE = 'f';
+select NOM, PRENOM, AN_NAISSANCE, AGE, TEMPS, CATEGORIE, KM
+from athlètes_féminins
+where AGE = (select max(AGE) from athlètes_féminins);
+
+6. Quelle ou quel est l’athlète (à l’exclusion des catégories d’élite) qui a fait le meilleur temps sur le
+parcours de 7.3 km ?
+
+select *
+from athlètes
+where KM = 7.3
+and CATEGORIE not like 'Elite%'
+and TEMPS = (select min(TEMPS)
+from athlètes
+where KM = 7.3
+and CATEGORIE not like 'Elite%');
+
+7. Pour chaque catégorie, afficher les trois meilleures coureuses (ou coureurs). On affichera la
+catégorie, le rang, le nom et le prénom de l’athlète, l’année de naissance, son temps et la
+moyenne. L’affichage sera trié par ordre alphabétique de la catégorie et par rang.
+
+select CATEGORIE, RANG, NOM, PRENOM, AN_NAISSANCE, TEMPS, MOYENNE
+from athlètes
+where RANG <= 3
+order by CATEGORIE, RANG;
+
+8. Quel est le nombre d’athlètes par catégorie ? Afficher la catégorie, l’intervalle des années de
+naissance de la catégorie, le nombre d’athlètes, triés par ordre alphabétique des catégories.
+
+create view nombre_athlètes_cathégorie as
+select CATEGORIE, count(CATEGORIE) as nombre_athlètes
+from athlètes
+group by CATEGORIE;
+select nombre_athlètes_cathégorie.CATEGORIE, ANNEES_NAISSANCE, nombre_athlètes
+from CATEGORIES, nombre_athlètes_cathégorie
+where CATEGORIES.CATEGORIE = nombre_athlètes_cathégorie.CATEGORIE
+order by nombre_athlètes_cathégorie.CATEGORIE;
+
+9. Quel est le nombre de participants par année de naissance (trié par ordre décroissant d’année de
+naissance) ?
+
+select AN_NAISSANCE, count(AN_NAISSANCE) as nombre_de_participants_par_année_naissance
+from athlètes
+group by AN_NAISSANCE
+order by AN_NAISSANCE;
+
+10. Idem, mais par âge au lieu de l’année de naissance (trié par ordre croissant d’âge)
+
+select AGE, count(AGE) as nombre_de_participants_par_age
+from athlètes
+group by AGE
+order by AGE;
+
+11. Combien y-a-t-il de prénoms différents parmi les athlètes féminines ?
+
+create view prenoms_féminins as
+select PRENOM, count(PRENOM) as nombre_athlètes_portant_ce_prénom
+from athlètes_féminins
+group by PRENOM;
+
+select count(*) as nombre_prenoms_differents
+from prenoms_féminins;
+
+12. Même question pour les athlètes masculins.
+
+create view athlètes_masculins as
+select *
+from athlètes
+where SEXE = 'h';
+
+create view prenoms_masculins as
+select PRENOM, count(PRENOM) as nombre_athlètes_portant_ce_prénom
+from athlètes_masculins
+group by PRENOM;
+
+select count(*) as nombre_prenoms_différents
+from prenoms_masculins;
+
+13. Quels sont les prénoms les plus fréquents chez les athlètes féminines ? Afficher le prénom et le
+nombre d’athlètes qui portent ce prénom, dans l’ordre décroissant du nombre d’athlète.
+
+select * from prenoms_féminins
+order by prenoms_féminins.nombre_athlètes_portant_ce_prénom desc;
+
+14. Même question pour les athlètes masculins.
+
+select * from prenoms_masculins
+order by prenoms_masculins.nombre_athlètes_portant_ce_prénom desc;
+
+15. « Les prénoms qui gagnent » : Trouvez les prénoms les plus fréquents parmi les coureuses
+classées dans les 50 premières (rang <= 50 ). Afficher le prénom et le nombre d’athlètes qui
+portent ce prénom dans l’ordre décroissant du nombre d’athlètes.
+
+select PRENOM, count(PRENOM) as nombre_athlètes_portant_ce_prénom
+from athlètes_féminins
+where RANG <= 50
+group by PRENOM
+order by nombre_athlètes_portant_ce_prénom desc;
+
+16. Même question pour les coureurs hommes.
+
+select PRENOM, count(PRENOM) as nombre_athlètes_portant_ce_prénom
+from athlètes_masculins
+where RANG <= 50
+group by PRENOM
+order by nombre_athlètes_portant_ce_prénom desc;
